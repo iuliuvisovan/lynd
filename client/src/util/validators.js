@@ -37,6 +37,7 @@ export const postType = value =>
   value === 'link' || value === 'text'
     ? undefined
     : 'must be link or text post';
+export const countryValidator = [required];
 export const phoneNumberValidator = [required, min(7), max(20), validPhoneChars];
 export const usernameValidator = [required, max(32), validChars, trimmed];
 export const passwordValidator = [required, min(6), max(72)];

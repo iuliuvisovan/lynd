@@ -24,6 +24,10 @@ const Button = styled.button`
   :focus {
     box-shadow: 0 0 0 2px ${props => props.theme.accent + '4d'};
   }
+
+  &[disabled] {
+    opacity: 0.6;
+  }
 `;
 
 export default Button;
