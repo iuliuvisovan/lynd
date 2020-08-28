@@ -1,6 +1,6 @@
-# asperitas
+# lynd
 
-Asperitas is a full stack reddit clone that I wrote to learn more about Node.js, React, and NoSQL databases. The name asperitas comes from a type of [cloud](https://en.wikipedia.org/wiki/Asperitas_(cloud)).
+Lynd is an experimental step towards a non-us-b(i)ased Internet.
 
 ## Installation
 
