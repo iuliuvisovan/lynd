@@ -19,20 +19,18 @@ const Logo = styled(Link)`
 `;
 
 const LogoImgDark = styled.img`
-  height: 32px;
+  height: 28px;
   margin-left: -8px;
   display: ${props => props.theme.darkLogoDisplay};
 `;
 
 const LogoImgLight = styled.img`
-  height: 32px;
+  height: 28px;
   margin-left: -8px;
   display: ${props => props.theme.lightLogoDisplay};
 `;
 
 export default props => {
-  console.log('props', props);
-
   return (
     <Logo to='/'>
       <LogoImgDark src='/logo.svg' alt='Logo' />

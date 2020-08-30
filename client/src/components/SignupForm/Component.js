@@ -5,6 +5,27 @@ import renderField from "../shared/form/renderField";
 import { usernameValidator, passwordValidator, phoneNumberValidator, countryValidator } from "../../util/validators";
 import SubmitButton from "../shared/form/SubmitButton";
 import CountryCodes from "./CountryCodes";
+import styled from "styled-components";
+
+const DialCode = styled.div`
+  position: relative;
+  height: 0;
+  top: 32px;
+  left: 9px;
+  z-index: 5;
+  font-size: 15px;
+  color: ${props => props.theme.normalText};
+  font-family: Arial;
+`;
+
+const SubmitButtonWrapper = styled.div`
+  position: relative;
+  height: 0;
+  top: 26px;
+  right: 3px;
+  align-self: flex-end;
+  z-index: 110;
+`;
 
 class SignupForm extends React.Component {
   state = {
@@ -16,12 +37,14 @@ class SignupForm extends React.Component {
     this.redirectIfLoggedIn();
   }
 
-  componentDidUpdate(prevProps, prevState, snapshot) {
+  componentDidUpdate() {
     this.redirectIfLoggedIn();
   }
 
   redirectIfLoggedIn() {
-    if (this.props.token) this.props.history.push("/");
+    if (this.props.token) {
+      this.props.history.push("/");
+    }
   }
 
   onSubmit = ({ username, password }) => {
@@ -60,38 +83,13 @@ class SignupForm extends React.Component {
             </option>
           ))}
         </Field>
-        <div
-          style={{
-            position: "relative",
-            height: 0,
-            top: "32px",
-            left: "9px",
-            zIndex: "110",
-            fontSize: "15px",
-            color: "#454f5b",
-            fontFamily: "Arial"
-          }}
-        >
-          <span>{dialCode}</span>
-        </div>
+        <DialCode>{dialCode}</DialCode>
         {dialCode && phoneNumber.length > 8 && (
-          <div
-            style={{
-              position: "relative",
-              height: 0,
-              top: "26px",
-              right: "3px",
-              alignSelf: "flex-end",
-              zIndex: "110",
-              fontSize: "15px",
-              color: "#454f5b",
-              fontFamily: "Arial"
-            }}
-          >
+          <SubmitButtonWrapper>
             <SubmitButton onClick={this.sendCode} type="button">
               send code
             </SubmitButton>
-          </div>
+          </SubmitButtonWrapper>
         )}
         <Field
           name="phoneNumber"
