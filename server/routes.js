@@ -5,6 +5,7 @@ const { jwtAuth, postAuth, commentAuth } = require('./auth');
 const router = require('express').Router();
 
 router.post('/request-sms-code', users.validate('request-sms-code'), users.requestSmsCode);
+router.post('/test-sms-code', users.validate('test-sms-code'), users.testSmsCode);
 router.post('/register', users.validate('register'), users.register);
 router.post('/login', users.validate(), users.login);
 

@@ -43,6 +43,8 @@ class SignupForm extends React.Component {
 
   redirectIfLoggedIn() {
     if (this.props.token) {
+      console.log("this.props.token", this.props.token);
+
       this.props.history.push("/");
     }
   }
@@ -55,7 +57,21 @@ class SignupForm extends React.Component {
     const dialCode = (CountryCodes.find(x => x.code === this.state.currentCountry) || {}).dial_code || "";
     const { phoneNumber } = this.state;
 
-    this.props.requestSendSms(dialCode + phoneNumber);
+    this.props.sendSms(dialCode + phoneNumber);
+  };
+
+  checkCode = e => {
+    const code = e.target.value;
+    const dialCode = (CountryCodes.find(x => x.code === this.state.currentCountry) || {}).dial_code || "";
+    const { phoneNumber } = this.state;
+
+    console.log("code", code);
+
+    if (code.length == 4) {
+      console.log("Checking code");
+
+      this.props.testSms(dialCode + phoneNumber, code);
+    }
   };
 
   render() {
@@ -63,8 +79,10 @@ class SignupForm extends React.Component {
 
     const dialCode = (CountryCodes.find(x => x.code === this.state.currentCountry) || {}).dial_code || "";
 
+    const { loading, sendingSms, hasSentSms, hasTestedSms, isCodeValid } = this.props;
+
     return (
-      <Form loading={this.props.loading} onSubmit={this.props.handleSubmit(this.onSubmit)}>
+      <Form loading={loading} onSubmit={this.props.handleSubmit(this.onSubmit)}>
         <Field name="username" label="username" type="text" component={renderField} validate={usernameValidator} />
         <Field name="password" label="password" type="password" component={renderField} validate={passwordValidator} />
         <Field name="password2" label="confirm password" type="password" component={renderField} />
@@ -86,8 +104,8 @@ class SignupForm extends React.Component {
         <DialCode>{dialCode}</DialCode>
         {dialCode && phoneNumber.length > 8 && (
           <SubmitButtonWrapper>
-            <SubmitButton onClick={this.sendCode} type="button">
-              send code
+            <SubmitButton disabled={sendingSms || hasSentSms} onClick={this.sendCode} type="button">
+              {sendingSms ? "sending..." : hasSentSms ? "sms sent!" : "send code"}
             </SubmitButton>
           </SubmitButtonWrapper>
         )}
@@ -100,6 +118,9 @@ class SignupForm extends React.Component {
           validate={phoneNumberValidator}
           onChange={e => this.setState({ phoneNumber: e.target.value })}
         />
+        {hasSentSms && <Field name="code" onChange={this.checkCode} label="code" type="text" component={renderField} style={{ width: "100px" }} />}
+        <span>{"hasTestedSms: " + hasTestedSms}</span>
+        <span>{"isCodeValid: " + isCodeValid}</span>
         <SubmitButton disabled type="submit">
           sign up
         </SubmitButton>

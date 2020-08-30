@@ -1,33 +1,59 @@
-import { login, signup, sendSms } from "../util/api";
+import { login, signup, requestSmsCode, testSmsCode } from "../util/api";
 
 export const LOGIN_REQUEST = "LOGIN_REQUEST";
 export const LOGIN_SUCCESS = "LOGIN_SUCCESS";
 export const LOGIN_ERROR = "LOGIN_ERROR";
 
-const loginRequest = { type: LOGIN_REQUEST };
-const loginSuccess = token => ({ type: LOGIN_SUCCESS, token });
-const loginError = error => ({ type: LOGIN_ERROR, error });
+// # sms request
 
-export const attemptLogin = (username, password) => async dispatch => {
-  dispatch(loginRequest);
+export const SEND_SMS_REQUEST = "SEND_SMS_REQUEST";
+export const SEND_SMS_SUCCESS = "SEND_SMS_SUCCESS";
+export const SEND_SMS_ERROR = "SEND_SMS_ERROR";
+
+export const sendSms = phoneNumber => async dispatch => {
+  dispatch({ type: SEND_SMS_REQUEST });
+
   try {
-    const token = await login(username, password);
-    dispatch(loginSuccess(token));
+    const hasSentCode = await requestSmsCode(phoneNumber);
+    if (hasSentCode) {
+      dispatch({ type: SEND_SMS_SUCCESS });
+    } else {
+      dispatch({ type: SEND_SMS_ERROR });
+    }
   } catch (error) {
-    dispatch(loginError(error));
+    dispatch({ type: SEND_SMS_ERROR, error });
   }
 };
+
+// # sms code test
+
+export const TEST_SMS_REQUEST = "TEST_SMS_REQUEST";
+export const TEST_SMS_SUCCESS = "TEST_SMS_SUCCESS";
+export const TEST_SMS_ERROR = "TEST_SMS_ERROR";
+
+export const testSms = (phoneNumber, smsCode) => async dispatch => {
+  dispatch({ type: TEST_SMS_REQUEST });
+
+  try {
+    const isCodeValid = await testSmsCode(phoneNumber, smsCode);
+
+    dispatch({ type: TEST_SMS_SUCCESS, isCodeValid });
+  } catch (error) {
+    dispatch({ type: TEST_SMS_ERROR, error });
+  }
+};
+
+// #signup
 
 export const SIGNUP_REQUEST = "SIGNUP_REQUEST";
 export const SIGNUP_SUCCESS = "SIGNUP_SUCCESS";
 export const SIGNUP_ERROR = "SIGNUP_ERROR";
 
-const signupRequest = { type: SIGNUP_REQUEST };
 const signupSuccess = token => ({ type: SIGNUP_SUCCESS, token });
 const signupError = error => ({ type: SIGNUP_ERROR, error });
 
 export const attemptSignup = (username, password) => async dispatch => {
-  dispatch(signupRequest);
+  dispatch({ type: SIGNUP_REQUEST });
   try {
     const token = await signup(username, password);
     dispatch(signupSuccess(token));
@@ -36,27 +62,18 @@ export const attemptSignup = (username, password) => async dispatch => {
   }
 };
 
+// #login
 
-export const SEND_SMS_REQUEST = "SEND_SMS_REQUEST";
-export const SEND_SMS_SUCCESS = "SEND_SMS_SUCCESS";
-export const SEND_SMS_ERROR = "SEND_SMS_ERROR";
+const loginSuccess = token => ({ type: LOGIN_SUCCESS, token });
+const loginError = error => ({ type: LOGIN_ERROR, error });
 
-const sendSmsRequest = () => ({ type: SEND_SMS_REQUEST });
-const sendSmsSuccess = () => ({ type: SEND_SMS_SUCCESS });
-const sendSmsError = error => ({ type: SEND_SMS_ERROR, error });
-
-
-export const requestSendSms = phoneNumber => async dispatch => {
-  dispatch(sendSmsRequest);
+export const attemptLogin = (username, password) => async dispatch => {
+  dispatch({ type: LOGIN_REQUEST });
   try {
-    const hasSentCode = await sendSms(phoneNumber);
-    if (hasSentCode) {
-      dispatch(sendSmsSuccess());
-    } else {
-      dispatch(sendSmsError({}));
-    }
+    const token = await login(username, password);
+    dispatch(loginSuccess(token));
   } catch (error) {
-    dispatch(sendSmsError(error));
+    dispatch(loginError(error));
   }
 };
 
