@@ -4,8 +4,9 @@ const comments = require('./controllers/comments');
 const { jwtAuth, postAuth, commentAuth } = require('./auth');
 const router = require('express').Router();
 
-router.post('/login', users.validate(), users.login);
+router.post('/request-sms-code', users.validate('request-sms-code'), users.requestSmsCode);
 router.post('/register', users.validate('register'), users.register);
+router.post('/login', users.validate(), users.login);
 
 router.param('post', posts.load);
 router.get('/posts', posts.list);

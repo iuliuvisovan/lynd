@@ -31,7 +31,48 @@ exports.register = async (req, res, next) => {
   }
 };
 
+
+exports.requestSmsCode = async (req, res, next) => {
+  const result = validationResult(req);
+  if (!result.isEmpty()) {
+    const errors = result.array({ onlyFirstError: true });
+    return res.status(422).json({ errors });
+  }
+
+  try {
+    const { phoneNumber } = req.body;
+
+    // await Twilio.sendSmsCode();
+
+    res.status(200).json({ codeSentSuccesfully: true });
+  } catch (err) {
+    next(err);
+  }
+};
+
 exports.validate = method => {
+  if (method === 'request-sms-code') {
+
+    const errors = [
+      body('phoneNumber')
+        .exists()
+        .withMessage('is required')
+
+        .isLength({ min: 1 })
+        .withMessage('cannot be blank')
+
+        .isLength({ max: 15 })
+        .withMessage('must be at most 15 characters long')
+
+        .custom(value => value.trim() === value)
+        .withMessage('cannot start or end with whitespace')
+
+        .matches(/^\+[0-9]+$/)
+        .withMessage('contains invalid characters'),
+    ]
+    return errors;
+  }
+
   const errors = [
     body('username')
       .exists()
@@ -71,6 +112,7 @@ exports.validate = method => {
       })
     );
   }
+
 
   return errors;
 };

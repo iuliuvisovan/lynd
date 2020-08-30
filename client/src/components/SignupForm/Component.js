@@ -8,7 +8,8 @@ import CountryCodes from "./CountryCodes";
 
 class SignupForm extends React.Component {
   state = {
-    currentCountry: null
+    currentCountry: null,
+    phoneNumber: ""
   };
 
   componentDidMount() {
@@ -27,7 +28,16 @@ class SignupForm extends React.Component {
     this.props.attemptSignup(username, password);
   };
 
+  sendCode = () => {
+    const dialCode = (CountryCodes.find(x => x.code === this.state.currentCountry) || {}).dial_code || "";
+    const { phoneNumber } = this.state;
+
+    this.props.requestSendSms(dialCode + phoneNumber);
+  };
+
   render() {
+    const { phoneNumber } = this.state;
+
     const dialCode = (CountryCodes.find(x => x.code === this.state.currentCountry) || {}).dial_code || "";
 
     return (
@@ -50,14 +60,39 @@ class SignupForm extends React.Component {
             </option>
           ))}
         </Field>
-        <div style={{ position: "relative", height: 0, top: "32px", left: "9px", zIndex: "110", fontSize: "15px", color: "#454f5b", fontFamily: "Arial" }}>
+        <div
+          style={{
+            position: "relative",
+            height: 0,
+            top: "32px",
+            left: "9px",
+            zIndex: "110",
+            fontSize: "15px",
+            color: "#454f5b",
+            fontFamily: "Arial"
+          }}
+        >
           <span>{dialCode}</span>
         </div>
-        {dialCode && <div style={{ position: "relative", height: 0, top: "26px", right: "3px", alignSelf: 'flex-end', zIndex: "110", fontSize: "15px", color: "#454f5b", fontFamily: "Arial" }}>
-          <SubmitButton type="button">
-            send code
-          </SubmitButton>
-        </div>}
+        {dialCode && phoneNumber.length > 8 && (
+          <div
+            style={{
+              position: "relative",
+              height: 0,
+              top: "26px",
+              right: "3px",
+              alignSelf: "flex-end",
+              zIndex: "110",
+              fontSize: "15px",
+              color: "#454f5b",
+              fontFamily: "Arial"
+            }}
+          >
+            <SubmitButton onClick={this.sendCode} type="button">
+              send code
+            </SubmitButton>
+          </div>
+        )}
         <Field
           name="phoneNumber"
           label="phone number"
@@ -65,6 +100,7 @@ class SignupForm extends React.Component {
           component={renderField}
           style={{ paddingLeft: 8 + dialCode.length * 10 + "px" }}
           validate={phoneNumberValidator}
+          onChange={e => this.setState({ phoneNumber: e.target.value })}
         />
         <SubmitButton disabled type="submit">
           sign up

@@ -77,6 +77,11 @@ export async function signup (username, password) {
   return json.token;
 }
 
+export async function sendSms (phoneNumber) {
+  const hasSent = await methods.post('request-sms-code', { phoneNumber });
+  return hasSent;
+}
+
 export async function getPosts (category) {
   return await methods.get(`posts/${category}`);
 }
