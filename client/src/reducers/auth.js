@@ -12,7 +12,8 @@ import {
   LOGOUT,
   TEST_SMS_REQUEST,
   TEST_SMS_SUCCESS,
-  TEST_SMS_ERROR,
+  TEST_SMS_FINALIZED,
+  TEST_SMS_ERROR
 } from "../actions/auth";
 
 const token = localStorage.getItem("token");
@@ -29,6 +30,7 @@ export default (state = initialState, action) => {
     case SEND_SMS_REQUEST:
       return { ...state, sendingSms: true };
     case TEST_SMS_REQUEST:
+      return { ...state, testingSms: true };
     case SIGNUP_REQUEST:
     case LOGIN_REQUEST:
       return { ...state, loading: true };
@@ -44,7 +46,12 @@ export default (state = initialState, action) => {
       return {
         ...state,
         hasTestedSms: true,
-        isCodeValid: action.isCodeValid,
+        isCodeValid: action.isCodeValid
+      };
+    case TEST_SMS_FINALIZED:
+      return {
+        ...state,
+        isSmsCheckFinalized: true
       };
     case SIGNUP_SUCCESS:
     case LOGIN_SUCCESS:

@@ -30,6 +30,7 @@ export const sendSms = phoneNumber => async dispatch => {
 export const TEST_SMS_REQUEST = "TEST_SMS_REQUEST";
 export const TEST_SMS_SUCCESS = "TEST_SMS_SUCCESS";
 export const TEST_SMS_ERROR = "TEST_SMS_ERROR";
+export const TEST_SMS_FINALIZED = "TEST_SMS_FINALIZED";
 
 export const testSms = (phoneNumber, smsCode) => async dispatch => {
   dispatch({ type: TEST_SMS_REQUEST });
@@ -38,6 +39,12 @@ export const testSms = (phoneNumber, smsCode) => async dispatch => {
     const isCodeValid = await testSmsCode(phoneNumber, smsCode);
 
     dispatch({ type: TEST_SMS_SUCCESS, isCodeValid });
+
+    if (isCodeValid) {
+      setTimeout(() => {
+        dispatch({ type: TEST_SMS_FINALIZED });
+      }, 1000);
+    }
   } catch (error) {
     dispatch({ type: TEST_SMS_ERROR, error });
   }

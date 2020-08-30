@@ -31,6 +31,13 @@ const Input = styled.input`
   :focus {
     box-shadow: 0 0 0 2px var(--shadow);
   }
+
+  &[disabled] {
+    opacity: 0.6;
+    cursor: default;
+    box-shadow: none;
+    border-color: ${props => props.theme.border};
+  }
 `;
 
 export default Input;

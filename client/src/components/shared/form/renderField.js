@@ -14,7 +14,7 @@ const VariableField = field => {
           <Label>{field.label}</Label>
           {field.meta.touched && field.meta.error && <Error>{field.meta.error}</Error>}
           <SelectWrapper>
-            <Input {...field.input} as="select" type="select">
+            <Input {...field.input} as="select" type="select" disabled={field.disabled}>
               {field.children}
             </Input>
           </SelectWrapper>
@@ -49,6 +49,7 @@ const VariableField = field => {
             placeholder={field.label}
             autoComplete="off"
             style={field.style}
+            disabled={field.disabled}
           />
         </InputWrapper>
       );

@@ -31,7 +31,7 @@ const Wrapper = styled.header`
 
 const Header = ({ user, logout, theme }) => (
   <Wrapper>
-    <HeaderLogo theme={theme} />
+    <HeaderLogo />
     <HeaderDarkButtonContainer />
     {user ? (
       <>

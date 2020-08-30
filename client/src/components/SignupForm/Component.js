@@ -16,6 +16,8 @@ const DialCode = styled.div`
   font-size: 15px;
   color: ${props => props.theme.normalText};
   font-family: Arial;
+  cursor: default;
+  opacity: ${props => (props.disabled ? "0.6" : 1)};
 `;
 
 const SubmitButtonWrapper = styled.div`
@@ -25,6 +27,18 @@ const SubmitButtonWrapper = styled.div`
   right: 3px;
   align-self: flex-end;
   z-index: 110;
+`;
+
+const CheckSign = styled.div`
+  color: #003399;
+  margin-right: 12px;
+  margin-top: 5px;
+  display: inline-block;
+
+  font-family: Arial;
+  font-size: 17px;
+  font-weight: 600;
+  transform: scaleX(-1) rotate(-35deg);
 `;
 
 class SignupForm extends React.Component {
@@ -65,11 +79,7 @@ class SignupForm extends React.Component {
     const dialCode = (CountryCodes.find(x => x.code === this.state.currentCountry) || {}).dial_code || "";
     const { phoneNumber } = this.state;
 
-    console.log("code", code);
-
     if (code.length == 4) {
-      console.log("Checking code");
-
       this.props.testSms(dialCode + phoneNumber, code);
     }
   };
@@ -79,7 +89,9 @@ class SignupForm extends React.Component {
 
     const dialCode = (CountryCodes.find(x => x.code === this.state.currentCountry) || {}).dial_code || "";
 
-    const { loading, sendingSms, hasSentSms, hasTestedSms, isCodeValid } = this.props;
+    const { loading, sendingSms, hasSentSms, hasTestedSms, isCodeValid, isSmsCheckFinalized } = this.props;
+
+    const isPhoneFieldDisabled = !dialCode || sendingSms || hasSentSms || isSmsCheckFinalized;
 
     return (
       <Form loading={loading} onSubmit={this.props.handleSubmit(this.onSubmit)}>
@@ -93,6 +105,7 @@ class SignupForm extends React.Component {
           component={renderField}
           validate={countryValidator}
           onChange={event => this.setState({ currentCountry: event.target.value })}
+          disabled={sendingSms || hasSentSms || isSmsCheckFinalized}
         >
           <option value="">select...</option>
           {CountryCodes.map(({ name, dial_code, code }) => (
@@ -101,12 +114,16 @@ class SignupForm extends React.Component {
             </option>
           ))}
         </Field>
-        <DialCode>{dialCode}</DialCode>
+        <DialCode disabled={isPhoneFieldDisabled}>{dialCode}</DialCode>
         {dialCode && phoneNumber.length > 8 && (
           <SubmitButtonWrapper>
-            <SubmitButton disabled={sendingSms || hasSentSms} onClick={this.sendCode} type="button">
-              {sendingSms ? "sending..." : hasSentSms ? "sms sent!" : "send code"}
-            </SubmitButton>
+            {isSmsCheckFinalized ? (
+              <CheckSign>L</CheckSign>
+            ) : (
+              <SubmitButton disabled={sendingSms || hasSentSms} onClick={this.sendCode} type="button">
+                {sendingSms ? "sending..." : hasSentSms ? "sms sent!" : "send code"}
+              </SubmitButton>
+            )}
           </SubmitButtonWrapper>
         )}
         <Field
@@ -114,14 +131,22 @@ class SignupForm extends React.Component {
           label="phone number"
           type="text"
           component={renderField}
-          style={{ paddingLeft: 8 + dialCode.length * 10 + "px" }}
+          style={{ paddingLeft: 8 + dialCode.length * 10 + "px", marginBottom: '8px' }}
           validate={phoneNumberValidator}
           onChange={e => this.setState({ phoneNumber: e.target.value })}
+          disabled={isPhoneFieldDisabled}
         />
-        {hasSentSms && <Field name="code" onChange={this.checkCode} label="code" type="text" component={renderField} style={{ width: "100px" }} />}
-        <span>{"hasTestedSms: " + hasTestedSms}</span>
-        <span>{"isCodeValid: " + isCodeValid}</span>
-        <SubmitButton disabled type="submit">
+        {!isSmsCheckFinalized && hasSentSms && (
+          <Field
+            name="code"
+            onChange={this.checkCode}
+            label="code"
+            type="text"
+            component={renderField}
+            style={{ width: "100px", backgroundColor: hasTestedSms && isCodeValid ? "#8bc34a9c" : "transparent" }}
+          />
+        )}
+        <SubmitButton disabled={!isSmsCheckFinalized} type="submit">
           sign up
         </SubmitButton>
       </Form>

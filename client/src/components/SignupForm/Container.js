@@ -8,6 +8,9 @@ import SignupForm from './Component';
 
 const mapStateToProps = state => ({
   sendingSms: state.auth.sendingSms,
+  hasTestedSms: state.auth.hasTestedSms,
+  isCodeValid: state.auth.isCodeValid,
+  isSmsCheckFinalized: state.auth.isSmsCheckFinalized,
   loading: state.auth.loading,
 });
 
